@@ -1,3 +1,7 @@
+
+
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -29,95 +33,122 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
 
-    return new GestureDetector(
+    return GestureDetector(
       onTap: (()=> FocusScope.of(context).requestFocus(new FocusNode())),
-      child: new Scaffold(
+      child:(Platform.isAndroid)
+        ? CupertinoPageScaffold(
+              child: body(),
+          navigationBar: CupertinoNavigationBar(
+            backgroundColor: setColor(),
+            middle: TextAvecStyle("Calories"),
+          ),
+            )
+        : Scaffold(
         appBar: AppBar(
           title: Text("Calories"),
           backgroundColor: setColor(),
         ),
-        body: SingleChildScrollView(
-            padding: EdgeInsets.all(15.0),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  TextAvecStyle("Remplissez tous les champs pour obtenir votre besoin journalier en calories"),
-                  Card(
-                    elevation: 10.0,
-                    child: Column(
-                      children: [
-                        Row (
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            TextAvecStyle("Femme", color: Colors.pink),
-                            Switch(
-                                value: genre,
-                                inactiveTrackColor: Colors.pink,
-                                activeTrackColor: Colors.blue,
-                                onChanged: (bool b){
-                                  setState(() {
-                                    genre = b;
-                                  });
-                                }),
-                            TextAvecStyle("Homme", color: Colors.blue)
-                          ],
-                        ),
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(setColor())
-                          ),
-                            child: TextAvecStyle((age == null)? "Appuyez pour votre age ": "Votre age est de : ${age!.toInt()} ans",color: Colors.white),
-                            onPressed: () => montrerPicker()
-                        ),
-                        Padding(padding: EdgeInsets.only(top: 20.0)),
-                        TextAvecStyle("Votre taille est de : ${taille.toInt()} cm.", color: setColor()),
-                        Slider(
-                          value: taille,
-                          activeColor: setColor(),
-                          onChanged: (double d){
-                            setState(() {
-                              taille = d;
-                            });
-                          },
-                          max: 215.0,
-                          min: 100.0,
-                        ),
-                        Padding(padding: EdgeInsets.only(top: 20.0)),
-                        TextField(
-                          keyboardType: TextInputType.number,
-                          onChanged: (String value) {
-                            setState(() {
-                              poids = double.tryParse(value);
-                            });
-                          },
-                          decoration: InputDecoration(labelText: "Entrez votre poids en Kilos."),
-                        ),
-                        TextAvecStyle("Quelle est votre activité sportive ?", color: setColor()),
-                        Padding(padding: EdgeInsets.only(top: 20.0)),
-                        rowRadio(),
-                        Padding(padding: EdgeInsets.only(top: 20.0)),
-                      ],
-                    ),
-                  ),
-                  Padding(padding: EdgeInsets.only(top: 20.0)),
-                  ElevatedButton(
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(setColor())
-                      ),
-                      child: TextAvecStyle("Calculer", color: Colors.white),
-                      onPressed: calculerNombreDeCalories
-                  )
-                ],
-              ),
-            )
-        ),
+        body: body(),
       ),
     ) ;
 
 
   }
 
+  Widget body(){
+    return SingleChildScrollView(
+        padding: EdgeInsets.all(15.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              TextAvecStyle("Remplissez tous les champs pour obtenir votre besoin journalier en calories"),
+              Card(
+                elevation: 10.0,
+                child: Column(
+                  children: [
+                    Row (
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        TextAvecStyle("Femme", color: Colors.pink),
+                        switchSelonPlatform(),
+                        TextAvecStyle("Homme", color: Colors.blue)
+                      ],
+                    ),
+                    ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(setColor())
+                        ),
+                        child: TextAvecStyle((age == null)? "Appuyez pour votre age ": "Votre age est de : ${age!.toInt()} ans",color: Colors.white),
+                        onPressed: () => montrerPicker()
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 20.0)),
+                    TextAvecStyle("Votre taille est de : ${taille.toInt()} cm.", color: setColor()),
+                    Slider(
+                      value: taille,
+                      activeColor: setColor(),
+                      onChanged: (double d){
+                        setState(() {
+                          taille = d;
+                        });
+                      },
+                      max: 215.0,
+                      min: 100.0,
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 20.0)),
+                    TextField(
+                      keyboardType: TextInputType.number,
+                      onChanged: (String value) {
+                        setState(() {
+                          poids = double.tryParse(value);
+                        });
+                      },
+                      decoration: InputDecoration(labelText: "Entrez votre poids en Kilos."),
+                    ),
+                    TextAvecStyle("Quelle est votre activité sportive ?", color: setColor()),
+                    Padding(padding: EdgeInsets.only(top: 20.0)),
+                    rowRadio(),
+                    Padding(padding: EdgeInsets.only(top: 20.0)),
+                  ],
+                ),
+              ),
+              Padding(padding: EdgeInsets.only(top: 20.0)),
+              ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(setColor())
+                  ),
+                  child: TextAvecStyle("Calculer", color: Colors.white),
+                  onPressed: calculerNombreDeCalories
+              )
+            ],
+          ),
+        )
+    );
+  }
+
+  Widget switchSelonPlatform(){
+    if(Platform.isAndroid){
+      return CupertinoSwitch(
+          value: genre,
+          activeColor: Colors.blue,
+          trackColor: Colors.pink,
+          onChanged: (bool b){
+            setState(() {
+              genre = b;
+            });
+          });
+    }else{
+      return Switch(
+          value: genre,
+          inactiveTrackColor: Colors.pink,
+          activeTrackColor: Colors.blue,
+          onChanged: (bool b){
+            setState(() {
+              genre = b;
+            });
+          });
+    }
+  }
 
   Row rowRadio(){
     List<Widget> l = [] ;
